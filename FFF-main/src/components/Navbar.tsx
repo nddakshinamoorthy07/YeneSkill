@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield } from 'lucide-react';
+import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -123,6 +123,14 @@ const Navbar = () => {
                           {user.email}
                         </p>
                       </div>
+                      <Link
+                        to="/profile"
+                        onClick={() => setShowUserMenu(false)}
+                        className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Profile</span>
+                      </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
