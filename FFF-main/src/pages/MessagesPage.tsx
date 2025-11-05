@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Send, Search, MoreVertical } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { sampleMentors } from '../data/sampleData';
 
 interface Thread {
   id: string;
@@ -46,9 +48,42 @@ const sampleMessages: Message[] = [
 
 export default function MessagesPage() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const [threads, setThreads] = useState<Thread[]>(sampleThreads);
   const [selectedThread, setSelectedThread] = useState<Thread | null>(sampleThreads[0]);
   const [messages, setMessages] = useState<Message[]>(sampleMessages);
   const [newMessage, setNewMessage] = useState('');
+
+  // Handle navigation from mentor page
+  useEffect(() => {
+    const state = location.state as { mentorId?: string; mentorName?: string } | null;
+    
+    if (state?.mentorId && state?.mentorName) {
+      // Find mentor details
+      const mentor = sampleMentors.find(m => m.id === state.mentorId);
+      
+      // Check if thread already exists
+      let existingThread = threads.find(t => t.participantName === state.mentorName);
+      
+      if (!existingThread && mentor) {
+        // Create new thread for this mentor
+        const newThread: Thread = {
+          id: state.mentorId,
+          participantName: state.mentorName,
+          participantAvatar: mentor.avatar,
+          lastMessage: 'Start a conversation with your mentor',
+          timestamp: new Date(),
+          unread: false,
+        };
+        
+        setThreads(prev => [newThread, ...prev]);
+        setSelectedThread(newThread);
+        setMessages([]);
+      } else if (existingThread) {
+        setSelectedThread(existingThread);
+      }
+    }
+  }, [location.state]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +129,7 @@ export default function MessagesPage() {
             </div>
 
             <div className="flex-1 overflow-y-auto">
-              {sampleThreads.map((thread) => (
+              {threads.map((thread) => (
                 <button
                   key={thread.id}
                   onClick={() => setSelectedThread(thread)}

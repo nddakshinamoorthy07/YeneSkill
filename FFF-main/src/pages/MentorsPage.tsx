@@ -1,16 +1,81 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Award, Clock, Mail } from 'lucide-react';
+import { X, Calendar, Award, Clock, Mail, Check, Video } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import MentorCard from '../components/MentorCard';
 import Tag from '../components/Tag';
 import { sampleMentors, sampleCourses } from '../data/sampleData';
+import { useAuth } from '../hooks/useAuth';
+
+interface Booking {
+  mentorId: string;
+  date: string;
+  status: 'scheduled' | 'completed' | 'cancelled';
+  sessionTime: string;
+}
 
 const MentorsPage = () => {
   const [selectedMentor, setSelectedMentor] = useState<any>(null);
+  const [bookedMentors, setBookedMentors] = useState<Booking[]>([]);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Load bookings from localStorage on mount
+  useEffect(() => {
+    const storageKey = user ? `bookings_${user.uid}` : 'bookings_guest';
+    const savedBookings = localStorage.getItem(storageKey);
+    if (savedBookings) {
+      setBookedMentors(JSON.parse(savedBookings));
+    }
+  }, [user]);
 
   const mentorCourses = selectedMentor
     ? sampleCourses.filter(c => c.mentorId === selectedMentor.id)
     : [];
+
+  const getMentorBooking = (mentorId: string) => {
+    return bookedMentors.find(b => b.mentorId === mentorId && b.status === 'scheduled');
+  };
+
+  const handleBookSession = () => {
+    if (!selectedMentor) return;
+
+    const newBooking: Booking = {
+      mentorId: selectedMentor.id,
+      date: new Date().toISOString(),
+      status: 'scheduled',
+      sessionTime: selectedMentor.availability
+    };
+
+    const updatedBookings = [...bookedMentors, newBooking];
+    setBookedMentors(updatedBookings);
+    
+    // Store bookings with user ID if logged in, otherwise use 'guest'
+    const storageKey = user ? `bookings_${user.uid}` : 'bookings_guest';
+    localStorage.setItem(storageKey, JSON.stringify(updatedBookings));
+  };
+
+  const handleCancelBooking = () => {
+    if (!selectedMentor) return;
+
+    // Remove the booking instead of just marking as cancelled
+    const updatedBookings = bookedMentors.filter(b =>
+      !(b.mentorId === selectedMentor.id && b.status === 'scheduled')
+    );
+    setBookedMentors(updatedBookings);
+    
+    const storageKey = user ? `bookings_${user.uid}` : 'bookings_guest';
+    localStorage.setItem(storageKey, JSON.stringify(updatedBookings));
+  };
+
+  const handleMessageMentor = () => {
+    if (!selectedMentor) return;
+    
+    // Navigate to messages page with mentor info
+    navigate('/messages', { state: { mentorId: selectedMentor.id, mentorName: selectedMentor.name } });
+  };
+
+  const currentBooking = selectedMentor ? getMentorBooking(selectedMentor.id) : null;
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark pt-20 pb-12">
@@ -150,15 +215,55 @@ const MentorsPage = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-3">
-                      <button className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all">
-                        <Calendar className="w-5 h-5" />
-                        <span>Book a Session</span>
-                      </button>
-                      <button className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                        <Mail className="w-5 h-5" />
-                      </button>
-                    </div>
+                    {currentBooking ? (
+                      <div className="space-y-4">
+                        <div className="p-4 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+                            <span className="font-semibold text-green-600 dark:text-green-400">Session Booked</span>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            Scheduled for {currentBooking.sessionTime}
+                          </p>
+                        </div>
+                        <div className="flex gap-3">
+                          <button className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all">
+                            <Video className="w-5 h-5" />
+                            <span>Join Session</span>
+                          </button>
+                          <button 
+                            onClick={handleCancelBooking}
+                            className="px-6 py-3 border border-red-500 dark:border-red-600 text-red-600 dark:text-red-400 font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button 
+                            onClick={handleMessageMentor}
+                            className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            title="Message Mentor"
+                          >
+                            <Mail className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex gap-3">
+                        <button 
+                          onClick={handleBookSession}
+                          className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all"
+                        >
+                          <Calendar className="w-5 h-5" />
+                          <span>Book a Session</span>
+                        </button>
+                        <button 
+                          onClick={handleMessageMentor}
+                          className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                          title="Message Mentor"
+                        >
+                          <Mail className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               </div>
