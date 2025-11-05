@@ -1,0 +1,156 @@
+{
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "mentors": "Mentors",
+    "career": "Career",
+    "messages": "Messages",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "login": "Login"
+  },
+  "hero": {
+    "title": "Learn. Connect. Grow.",
+    "subtitle": "Transform your future with personalized learning, expert mentorship, and AI-powered career guidance.",
+    "cta": "Start Learning",
+    "stats": {
+      "learners": "Active Learners",
+      "courses": "Courses",
+      "mentors": "Expert Mentors"
+    }
+  },
+  "features": {
+    "title": "Why Choose YeneSkill?",
+    "ai": {
+      "title": "AI-Powered Learning",
+      "description": "Personalized course recommendations and adaptive difficulty based on your progress"
+    },
+    "offline": {
+      "title": "Learn Offline",
+      "description": "Download courses and continue learning even without internet connection"
+    },
+    "mentorship": {
+      "title": "Expert Mentorship",
+      "description": "Connect with industry professionals for guidance and career advice"
+    },
+    "multilingual": {
+      "title": "Your Language",
+      "description": "Access content in English, Amharic, Hindi, or French"
+    },
+    "career": {
+      "title": "Career Roadmap",
+      "description": "Visualize your skills and get AI-guided paths to your dream career"
+    },
+    "certificates": {
+      "title": "Verified Certificates",
+      "description": "Earn recognized certificates to boost your professional profile"
+    }
+  },
+  "courses": {
+    "title": "Explore Courses",
+    "search": "Search courses...",
+    "filter": {
+      "all": "All Levels",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "categories": "Categories",
+    "duration": "Duration",
+    "enroll": "Enroll Now",
+    "download": "Download for Offline",
+    "preview": "Preview Course",
+    "level": "Level",
+    "students": "students",
+    "rating": "Rating"
+  },
+  "mentors": {
+    "title": "Meet Our Mentors",
+    "subtitle": "Connect with experienced professionals who can guide your learning journey",
+    "expertise": "Expertise",
+    "languages": "Languages",
+    "rating": "Rating",
+    "request": "Request Mentorship",
+    "sessions": "sessions completed",
+    "filter": "Filter by expertise"
+  },
+  "career": {
+    "title": "Your Career Roadmap",
+    "subtitle": "Visualize your skills and explore personalized learning paths",
+    "skills": "Your Skills",
+    "recommended": "Recommended Skills",
+    "paths": "Learning Paths",
+    "export": "Export as PDF",
+    "estimate": "Estimated time"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "streak": "day learning streak",
+    "progress": "Overall Progress",
+    "continue": "Continue Learning",
+    "recommended": "Recommended for You",
+    "topMentors": "Top Mentors",
+    "recentActivity": "Recent Activity"
+  },
+  "messages": {
+    "title": "Messages",
+    "noMessages": "No messages yet",
+    "send": "Send",
+    "typeMessage": "Type a message..."
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "googleSignIn": "Continue with Google",
+    "or": "or"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "close": "Close"
+  },
+  "offline": {
+    "youAreOffline": "You're offline",
+    "message": "Some features may be limited. Your changes will sync when you're back online.",
+    "downloaded": "Downloaded for offline use",
+    "install": "Install App"
+  },
+  "sdg": {
+    "title": "Our Impact",
+    "subtitle": "Aligned with UN Sustainable Development Goals",
+    "sdg4": "Quality Education",
+    "sdg5": "Gender Equality",
+    "sdg8": "Decent Work & Economic Growth",
+    "sdg9": "Industry, Innovation & Infrastructure",
+    "sdg10": "Reduced Inequalities"
+  },
+  "testimonials": {
+    "title": "Success Stories",
+    "subtitle": "Hear from learners who transformed their careers with YeneSkill"
+  },
+  "footer": {
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "© 2025 YeneSkill. All rights reserved.",
+    "social": "Follow Us"
+  }
+}
