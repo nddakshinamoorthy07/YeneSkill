@@ -1,4 +1,4 @@
-# 🎓 Welcome to FutureFocus Foundation Platform!
+# 🎓 Welcome to YeneSkill Platform!
 
 ## 🎉 Congratulations!
 
