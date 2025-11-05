@@ -2,15 +2,19 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
-import am from './locales/am.json';
 import hi from './locales/hi.json';
-import fr from './locales/fr.json';
+import ta from './locales/ta.json';
+import te from './locales/te.json';
+import bn from './locales/bn.json';
+import mr from './locales/mr.json';
 
 const resources = {
   en: { translation: en },
-  am: { translation: am },
   hi: { translation: hi },
-  fr: { translation: fr },
+  ta: { translation: ta },
+  te: { translation: te },
+  bn: { translation: bn },
+  mr: { translation: mr },
 };
 
 i18n
@@ -19,7 +23,7 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
-    supportedLngs: ['en', 'am', 'hi', 'fr'],
+    supportedLngs: ['en', 'hi', 'ta', 'te', 'bn', 'mr'],
     interpolation: {
       escapeValue: false,
     },

@@ -5,9 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'am', name: 'አማርኛ', flag: '🇪🇹' },
   { code: 'hi', name: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'ta', name: 'தமிழ்', flag: '🇮🇳' },
+  { code: 'te', name: 'తెలుగు', flag: '🇮🇳' },
+  { code: 'bn', name: 'বাংলা', flag: '🇮🇳' },
+  { code: 'mr', name: 'मराठी', flag: '🇮🇳' },
 ];
 
 export default function LanguageSwitcher() {

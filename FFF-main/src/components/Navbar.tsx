@@ -35,7 +35,7 @@ const Navbar = () => {
     ? [
         { to: '/dashboard', label: t('nav.dashboard'), icon: Home },
         { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
-        { to: '/library', label: 'Library', icon: BookMarked },
+        { to: '/library', label: t('nav.library'), icon: BookMarked },
         { to: '/mentors', label: t('nav.mentors'), icon: Users },
         { to: '/career', label: t('nav.career'), icon: Briefcase },
         { to: '/messages', label: t('nav.messages'), icon: MessageSquare },
@@ -44,7 +44,7 @@ const Navbar = () => {
     : [
         { to: '/', label: t('nav.home'), icon: Home },
         { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
-        { to: '/library', label: 'Library', icon: BookMarked },
+        { to: '/library', label: t('nav.library'), icon: BookMarked },
         { to: '/mentors', label: t('nav.mentors'), icon: Users },
       ];
 
