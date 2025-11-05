@@ -183,7 +183,7 @@ export const testimonials = [
     id: '4',
     name: 'Michael Torres',
     role: 'Full-Stack Developer',
-    content: 'FFF gave me the confidence and skills to switch careers. The structured curriculum and supportive mentors made all the difference.',
+    content: 'YeneSkill gave me the confidence and skills to switch careers. The structured curriculum and supportive mentors made all the difference.',
     avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200',
     rating: 5,
   },

@@ -56,7 +56,7 @@ const LoginPage = () => {
               <div className="bg-white/20 backdrop-blur-sm p-3 rounded-lg">
                 <GraduationCap className="w-8 h-8" />
               </div>
-              <span className="text-2xl font-bold">FFF</span>
+              <span className="text-2xl font-bold">YeneSkill</span>
             </Link>
 
             <h1 className="text-5xl font-bold mb-6">

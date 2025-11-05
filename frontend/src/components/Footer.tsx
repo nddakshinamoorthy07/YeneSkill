@@ -13,7 +13,7 @@ const Footer = () => {
               <div className="bg-gradient-primary p-2 rounded-lg">
                 <GraduationCap className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">FFF</span>
+              <span className="text-xl font-bold text-white">YeneSkill</span>
             </div>
             <p className="text-sm mb-4">
               Empowering learners worldwide with quality education and mentorship opportunities.

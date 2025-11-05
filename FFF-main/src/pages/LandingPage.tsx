@@ -60,7 +60,7 @@ const LandingPage = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose <span className="text-primary">FFF</span>?
+              Why Choose <span className="text-primary">YeneSkill</span>?
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Everything you need to accelerate your learning and achieve your career goals.
@@ -96,7 +96,7 @@ const LandingPage = () => {
               Student <span className="text-primary">Success Stories</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Hear from learners who transformed their careers with FFF.
+              Hear from learners who transformed their careers with YeneSkill.
             </p>
           </motion.div>
 
