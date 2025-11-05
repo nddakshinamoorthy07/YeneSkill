@@ -13,6 +13,7 @@ import CareerPage from './pages/CareerPage';
 import MessagesPage from './pages/MessagesPage';
 import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
+import LibraryPage from './pages/LibraryPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -41,6 +42,7 @@ function App() {
           <Route path="/lessons" element={<CoursesPage />} />
           <Route path="/mentors" element={<MentorsPage />} />
           <Route path="/course/:id" element={<CourseDetailPage />} />
+          <Route path="/library" element={<LibraryPage />} />
           <Route
             path="/dashboard"
             element={

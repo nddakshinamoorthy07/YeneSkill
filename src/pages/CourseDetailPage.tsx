@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Play, Clock, Users, Star, Award, CheckCircle, Lock, Share2, Bookmark } from 'lucide-react';
 import { useState } from 'react';
@@ -9,8 +9,17 @@ import { sampleCourses, sampleMentors } from '../data/sampleData';
 
 const CourseDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [isSaved, setIsSaved] = useState(() => {
+    const saved = localStorage.getItem('savedCourses');
+    return saved ? JSON.parse(saved).includes(id) : false;
+  });
+  const [isEnrolled, setIsEnrolled] = useState(() => {
+    const enrolled = localStorage.getItem('enrolledCourses');
+    return enrolled ? JSON.parse(enrolled).includes(id) : false;
+  });
   
   const course = sampleCourses.find(c => c.id === id);
   const mentor = course ? sampleMentors.find(m => m.id === course.mentorId) : null;
@@ -34,6 +43,67 @@ const CourseDetailPage = () => {
     { id: 'discussions', label: 'Discussions' },
     { id: 'resources', label: 'Resources' },
   ];
+
+  const handleEnroll = () => {
+    if (!isEnrolled) {
+      setIsEnrolled(true);
+      const enrolled = localStorage.getItem('enrolledCourses');
+      const enrolledList = enrolled ? JSON.parse(enrolled) : [];
+      enrolledList.push(id);
+      localStorage.setItem('enrolledCourses', JSON.stringify(enrolledList));
+    }
+    setVideoModalOpen(true);
+  };
+
+  const handleContinueLearning = () => {
+    const nextLesson = lessons.find(lesson => !lesson.completed && !lesson.locked);
+    if (nextLesson) {
+      setVideoModalOpen(true);
+    } else if (course.progress && course.progress < 100) {
+      setActiveTab('lessons');
+    } else {
+      navigate(`/lessons`);
+    }
+  };
+
+  const handleSave = () => {
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+    
+    const saved = localStorage.getItem('savedCourses');
+    let savedList = saved ? JSON.parse(saved) : [];
+    
+    if (newSavedState) {
+      if (!savedList.includes(id)) {
+        savedList.push(id);
+      }
+      alert('Course added to your library!');
+    } else {
+      savedList = savedList.filter((courseId: string) => courseId !== id);
+      alert('Course removed from library');
+    }
+    
+    localStorage.setItem('savedCourses', JSON.stringify(savedList));
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: course.title,
+      text: `Check out this course: ${course.title}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Course link copied to clipboard!');
+      }
+    } catch (err) {
+      console.error('Error sharing:', err);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background-light dark:bg-background-dark pt-16">
@@ -303,16 +373,25 @@ const CourseDetailPage = () => {
                   </div>
                 ) : null}
 
-                <button className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all">
-                  {course.progress ? 'Continue Learning' : 'Enroll Now'}
+                <button 
+                  onClick={isEnrolled || course.progress ? handleContinueLearning : handleEnroll}
+                  className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all"
+                >
+                  {isEnrolled || course.progress ? 'Continue Learning' : 'Enroll Now'}
                 </button>
 
                 <div className="flex gap-2">
-                  <button className="flex-1 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2">
-                    <Bookmark className="w-4 h-4" />
-                    <span className="text-sm">Save</span>
+                  <button 
+                    onClick={handleSave}
+                    className={`flex-1 py-2 border ${isSaved ? 'border-primary bg-primary/10' : 'border-gray-300 dark:border-gray-600'} text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2`}
+                  >
+                    <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-primary text-primary' : ''}`} />
+                    <span className="text-sm">{isSaved ? 'Saved' : 'Save'}</span>
                   </button>
-                  <button className="flex-1 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2">
+                  <button 
+                    onClick={handleShare}
+                    className="flex-1 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center justify-center space-x-2"
+                  >
                     <Share2 className="w-4 h-4" />
                     <span className="text-sm">Share</span>
                   </button>

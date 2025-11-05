@@ -1,11 +1,19 @@
 import { db } from '../firebase';
-import { doc, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, getDoc } from 'firebase/firestore';
 
 /**
  * Test function to simulate course progress
  * Call this from browser console to test live updates
  */
-export async function addTestCourse(userId: string, courseData?: any) {
+export async function addTestCourse(userId: string, courseData?: Partial<{
+  id: string;
+  title: string;
+  progress: number;
+  durationHours: number;
+  enrolledAt: Date;
+  lastAccessedAt: Date;
+  status: string;
+}>) {
   const defaultCourse = {
     id: `course-${Date.now()}`,
     title: 'Test Course',
@@ -77,7 +85,7 @@ export async function updateWeeklyHours(userId: string, hours: number) {
  * Increase streak
  */
 export async function increaseStreak(userId: string) {
-  const userDoc = await db.collection('users').doc(userId).get();
+  const userDoc = await getDoc(doc(db, 'users', userId));
   const currentStreak = userDoc.data()?.streak || 0;
 
   await updateDoc(doc(db, 'users', userId), {
@@ -91,7 +99,8 @@ export async function increaseStreak(userId: string) {
 /**
  * Recalculate and update user stats
  */
-async function updateUserStats(userId: string) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function updateUserStats(_userId: string) {
   // This would typically query all courses and recalculate
   // For now, we'll just trigger a refresh
   console.log('📊 Stats will refresh on next dashboard load');
@@ -113,7 +122,7 @@ export async function resetProgress(userId: string) {
 
 // Make functions available globally in browser console
 if (typeof window !== 'undefined') {
-  (window as any).testProgress = {
+  (window as unknown as Record<string, unknown>).testProgress = {
     addTestCourse,
     completeCourse,
     updateCourseProgress,

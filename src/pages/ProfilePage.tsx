@@ -89,14 +89,14 @@ export default function ProfilePage() {
       
       // If user document doesn't exist, create it
       if (!userDoc.exists()) {
-        const newProfile = {
+        const newProfile: UserProfile = {
           displayName: user.displayName || 'Anonymous User',
           email: user.email || '',
           bio: 'Welcome to YeneSkill! Click edit to add your bio.',
           photoURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=3B82F6&color=fff&size=300`,
           createdAt: new Date(),
           language: 'en',
-          theme: 'light',
+          theme: 'light' as const,
           streak: 0,
           totalCourses: 0,
           completedCourses: 0,
