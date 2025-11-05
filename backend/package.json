@@ -1,0 +1,24 @@
+{
+  "name": "fff-backend",
+  "version": "1.0.0",
+  "description": "FFF Platform Backend - Firebase Functions",
+  "main": "index.js",
+  "scripts": {
+    "serve": "firebase emulators:start",
+    "deploy": "firebase deploy",
+    "logs": "firebase functions:log"
+  },
+  "keywords": ["firebase", "functions", "backend"],
+  "author": "FFF Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^4.5.0"
+  },
+  "devDependencies": {
+    "firebase-tools": "^13.0.0"
+  },
+  "engines": {
+    "node": "18"
+  }
+}
