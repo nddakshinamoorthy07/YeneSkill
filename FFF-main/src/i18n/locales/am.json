@@ -1,0 +1,156 @@
+{
+  "nav": {
+    "home": "መነሻ",
+    "courses": "ኮርሶች",
+    "mentors": "አማካሪዎች",
+    "career": "የስራ መንገድ",
+    "messages": "መልእክቶች",
+    "dashboard": "ዳሽቦርድ",
+    "logout": "ውጣ",
+    "login": "ግባ"
+  },
+  "hero": {
+    "title": "ተማር። ተገናኝ። አድግ።",
+    "subtitle": "በግል የተበጀ ትምህርት፣ የባለሙያ አማካሪነት እና AI-ተኮር የስራ መመሪያ ወደፊትህን ለውጥ።",
+    "cta": "ትምህርት ጀምር",
+    "stats": {
+      "learners": "ንቁ ተማሪዎች",
+      "courses": "ኮርሶች",
+      "mentors": "ባለሙያ አማካሪዎች"
+    }
+  },
+  "features": {
+    "title": "ለምን የኔስኪል?",
+    "ai": {
+      "title": "AI-ተኮር ትምህርት",
+      "description": "በእድገትዎ ላይ የተመሰረተ የተበጀ ኮርስ ምክሮች እና የመሰናክል ደረጃ"
+    },
+    "offline": {
+      "title": "ከመስመር ውጭ ተማር",
+      "description": "ኮርሶችን አውርድ እና ኢንተርኔት ባይኖርም ትምህርትህን ቀጥል"
+    },
+    "mentorship": {
+      "title": "የባለሙያ አማካሪነት",
+      "description": "ለመመሪያ እና የስራ ምክር ከኢንዱስትሪ ባለሙያዎች ጋር ተገናኝ"
+    },
+    "multilingual": {
+      "title": "የእርስዎ ቋንቋ",
+      "description": "ይዘትን በእንግሊዝኛ፣ አማርኛ፣ ሂንዲ ወይም ፈረንሳይኛ ያግኙ"
+    },
+    "career": {
+      "title": "የስራ ካርታ",
+      "description": "ችሎታዎችዎን አስተካክል እና ወደ ህልም ስራዎ AI-የሚመራ መንገዶች ያግኙ"
+    },
+    "certificates": {
+      "title": "የተረጋገጡ የምስክር ወረቀቶች",
+      "description": "የሙያ መገለጫዎን ለማሳደግ የታወቁ የምስክር ወረቀቶችን ያግኙ"
+    }
+  },
+  "courses": {
+    "title": "ኮርሶችን ያስሱ",
+    "search": "ኮርሶችን ፈልግ...",
+    "filter": {
+      "all": "ሁሉም ደረጃዎች",
+      "beginner": "ጀማሪ",
+      "intermediate": "መካከለኛ",
+      "advanced": "የላቀ"
+    },
+    "categories": "ምድቦች",
+    "duration": "ጊዜ",
+    "enroll": "አሁኑኑ ተመዝገብ",
+    "download": "ለመስመር ውጭ አውርድ",
+    "preview": "ኮርስ ቅድመ እይታ",
+    "level": "ደረጃ",
+    "students": "ተማሪዎች",
+    "rating": "ደረጃ አሰጣጥ"
+  },
+  "mentors": {
+    "title": "አማካሪዎቻችንን ይተዋወቁ",
+    "subtitle": "የትምህርት ጉዞዎን መምራት ከሚችሉ የልምድ ባለሙያዎች ጋር ተገናኝ",
+    "expertise": "እውቀት",
+    "languages": "ቋንቋዎች",
+    "rating": "ደረጃ አሰጣጥ",
+    "request": "አማካሪነት ጠይቅ",
+    "sessions": "ክፍለ ጊዜዎች ተጠናቀዋል",
+    "filter": "በእውቀት አጣራ"
+  },
+  "career": {
+    "title": "የእርስዎ የስራ ካርታ",
+    "subtitle": "ችሎታዎችዎን አስተካክል እና የተበጀ የትምህርት መንገዶችን ያስሱ",
+    "skills": "ችሎታዎችዎ",
+    "recommended": "የሚመከሩ ችሎታዎች",
+    "paths": "የትምህርት መንገዶች",
+    "export": "እንደ PDF ላክ",
+    "estimate": "የሚገመተው ጊዜ"
+  },
+  "dashboard": {
+    "welcome": "እንኳን በሰላም መጡ",
+    "streak": "ቀን የትምህርት ተከታታይ",
+    "progress": "አጠቃላይ እድገት",
+    "continue": "ትምህርት ቀጥል",
+    "recommended": "ለእርስዎ የሚመከር",
+    "topMentors": "ምርጥ አማካሪዎች",
+    "recentActivity": "የቅርብ ጊዜ እንቅስቃሴ"
+  },
+  "messages": {
+    "title": "መልእክቶች",
+    "noMessages": "እስካሁን መልእክቶች የሉም",
+    "send": "ላክ",
+    "typeMessage": "መልእክት ይጻፉ..."
+  },
+  "auth": {
+    "login": "ግባ",
+    "signup": "ተመዝገብ",
+    "email": "ኢሜይል",
+    "password": "የይለፍ ቃል",
+    "confirmPassword": "የይለፍ ቃል አረጋግጥ",
+    "forgotPassword": "የይለፍ ቃል ረስተዋል?",
+    "noAccount": "መለያ የለዎትም?",
+    "hasAccount": "አስቀድመው መለያ አለዎት?",
+    "googleSignIn": "በGoogle ቀጥል",
+    "or": "ወይም"
+  },
+  "common": {
+    "loading": "በመጫን ላይ...",
+    "error": "የሆነ ችግር ተፈጥሯል",
+    "retry": "እንደገና ሞክር",
+    "save": "አስቀምጥ",
+    "cancel": "ሰርዝ",
+    "delete": "ሰርዝ",
+    "edit": "አርትዕ",
+    "back": "ወደ ኋላ",
+    "next": "ቀጣይ",
+    "previous": "ቀዳሚ",
+    "submit": "አስገባ",
+    "search": "ፈልግ",
+    "filter": "አጣራ",
+    "close": "ዝጋ"
+  },
+  "offline": {
+    "youAreOffline": "ከመስመር ውጭ ነዎት",
+    "message": "አንዳንድ ባህሪያት የተገደቡ ሊሆኑ ይችላሉ። ለውጦችዎ በመስመር ላይ ሲመለሱ ይመሳሰላሉ።",
+    "downloaded": "ለመስመር ውጭ አጠቃቀም ወርዷል",
+    "install": "መተግበሪያ ጫን"
+  },
+  "sdg": {
+    "title": "ተፅእኖአችን",
+    "subtitle": "ከUN ዘላቂ የልማት ግቦች ጋር የተጣጣመ",
+    "sdg4": "ጥራት ያለው ትምህርት",
+    "sdg5": "የሥርዓተ-ፆታ እኩልነት",
+    "sdg8": "ጥሩ ስራ እና ኢኮኖሚያዊ እድገት",
+    "sdg9": "ኢንዱስትሪ፣ ፈጠራ እና መሠረተ ልማት",
+    "sdg10": "የተቀነሱ እኩልነቶች"
+  },
+  "testimonials": {
+    "title": "የስኬት ታሪኮች",
+    "subtitle": "ከየኔስኪል ጋር ስራቸውን ከለወጡ ተማሪዎች ያዳምጡ"
+  },
+  "footer": {
+    "about": "ስለ እኛ",
+    "contact": "ያግኙን",
+    "privacy": "የግላዊነት ፖሊሲ",
+    "terms": "የአገልግሎት ውሎች",
+    "copyright": "© 2025 የኔስኪል። ሁሉም መብቶች የተጠበቁ ናቸው።",
+    "social": "ተከተሉን"
+  }
+}

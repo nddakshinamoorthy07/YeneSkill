@@ -3,11 +3,12 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  User,
 } from 'firebase/auth';
 import { auth } from '../firebase';
 
 interface AuthFormProps {
-  user: any;
+  user: User | null;
 }
 
 export default function AuthForm({ user }: AuthFormProps) {
@@ -30,8 +31,8 @@ export default function AuthForm({ user }: AuthFormProps) {
       }
       setEmail('');
       setPassword('');
-    } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Authentication failed');
     } finally {
       setLoading(false);
     }
@@ -40,8 +41,8 @@ export default function AuthForm({ user }: AuthFormProps) {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-    } catch (err: any) {
-      setError(err.message || 'Sign out failed');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign out failed');
     }
   };
 

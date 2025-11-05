@@ -6,7 +6,7 @@ import Tag from '../components/Tag';
 import { sampleMentors, sampleCourses } from '../data/sampleData';
 
 const MentorsPage = () => {
-  const [selectedMentor, setSelectedMentor] = useState<any>(null);
+  const [selectedMentor, setSelectedMentor] = useState<typeof sampleMentors[0] | null>(null);
 
   const mentorCourses = selectedMentor
     ? sampleCourses.filter(c => c.mentorId === selectedMentor.id)

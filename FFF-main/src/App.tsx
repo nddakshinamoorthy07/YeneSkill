@@ -1,12 +1,17 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
+import OfflineBadge from './components/OfflineBadge';
+import InstallPWA from './components/InstallPWA';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import CoursesPage from './pages/CoursesPage';
 import MentorsPage from './pages/MentorsPage';
 import CourseDetailPage from './pages/CourseDetailPage';
+import CareerPage from './pages/CareerPage';
+import MessagesPage from './pages/MessagesPage';
+import AdminPage from './pages/AdminPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -27,6 +32,8 @@ function App() {
     <Router>
       <div className="min-h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-white">
         <Navbar />
+        <OfflineBadge />
+        <InstallPWA />
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -38,6 +45,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/career"
+            element={
+              <ProtectedRoute>
+                <CareerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              <ProtectedRoute>
+                <MessagesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminPage />
               </ProtectedRoute>
             }
           />

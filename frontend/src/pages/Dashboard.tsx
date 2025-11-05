@@ -9,7 +9,7 @@ import { useState } from 'react';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [, setSelectedMentor] = useState<any>(null);
+  const [, setSelectedMentor] = useState<typeof sampleMentors[0] | null>(null);
 
   const continueLearning = sampleCourses.filter(c => c.progress && c.progress > 0);
   const recommendedCourses = sampleCourses.filter(c => !c.progress || c.progress === 0).slice(0, 3);

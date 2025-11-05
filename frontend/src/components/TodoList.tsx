@@ -8,6 +8,7 @@ import {
   query,
   orderBy,
   updateDoc,
+  Timestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 
@@ -15,7 +16,7 @@ interface Todo {
   id: string;
   text: string;
   completed: boolean;
-  createdAt: any;
+  createdAt: Timestamp | Date;
 }
 
 interface TodoListProps {
@@ -115,6 +116,8 @@ export default function TodoList({ userId }: TodoListProps) {
                 type="checkbox"
                 checked={todo.completed}
                 onChange={() => toggleTodo(todo.id, todo.completed)}
+                aria-label={`Mark "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`}
+                title={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
                 className="w-5 h-5"
               />
               <span

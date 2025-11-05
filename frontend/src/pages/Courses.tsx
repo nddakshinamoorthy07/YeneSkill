@@ -28,6 +28,7 @@ export default function Courses({ userId }: CoursesProps) {
   useEffect(() => {
     loadCourses();
     loadEnrollments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const loadCourses = async () => {

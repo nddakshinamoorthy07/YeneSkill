@@ -3,6 +3,7 @@ import { BookOpen, Users, Award, Video, Target, TrendingUp } from 'lucide-react'
 import HeroSection from '../components/HeroSection';
 import FeatureCard from '../components/FeatureCard';
 import TestimonialSlider from '../components/TestimonialSlider';
+import SDGPanel from '../components/SDGPanel';
 import Footer from '../components/Footer';
 import { testimonials } from '../data/sampleData';
 
@@ -103,6 +104,8 @@ const LandingPage = () => {
           <TestimonialSlider testimonials={testimonials} />
         </div>
       </section>
+
+      <SDGPanel />
 
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">

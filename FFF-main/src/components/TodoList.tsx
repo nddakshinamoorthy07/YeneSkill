@@ -115,6 +115,8 @@ export default function TodoList({ userId }: TodoListProps) {
                 type="checkbox"
                 checked={todo.completed}
                 onChange={() => toggleTodo(todo.id, todo.completed)}
+                aria-label={`Mark "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`}
+                title={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
                 className="w-5 h-5"
               />
               <span

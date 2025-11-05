@@ -25,8 +25,8 @@ const LoginPage = () => {
         await signup(formData.email, formData.password);
       }
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -36,8 +36,8 @@ const LoginPage = () => {
     try {
       await googleSignIn();
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'An error occurred');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 

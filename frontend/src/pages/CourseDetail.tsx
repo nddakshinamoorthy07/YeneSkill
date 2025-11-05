@@ -14,11 +14,33 @@ interface Lesson {
   completed: boolean;
 }
 
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  instructor: string;
+  duration: string;
+  level: string;
+  category?: string;
+  thumbnail?: string;
+  [key: string]: unknown;
+}
+
+interface Enrollment {
+  id: string;
+  courseId: string;
+  userId: string;
+  progress: number;
+  enrolledAt: Date;
+  completed?: boolean;
+  [key: string]: unknown;
+}
+
 export default function CourseDetail({ userId }: CourseDetailProps) {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const [course, setCourse] = useState<any>(null);
-  const [enrollment, setEnrollment] = useState<any>(null);
+  const [course, setCourse] = useState<Course | null>(null);
+  const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [lessons, setLessons] = useState<Lesson[]>([
     { id: '1', title: 'Introduction', duration: '10 min', completed: false },
     { id: '2', title: 'Core Concepts', duration: '25 min', completed: false },
@@ -30,6 +52,7 @@ export default function CourseDetail({ userId }: CourseDetailProps) {
 
   useEffect(() => {
     loadCourseData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, userId]);
 
   const loadCourseData = async () => {
@@ -38,7 +61,7 @@ export default function CourseDetail({ userId }: CourseDetailProps) {
 
       const courseDoc = await getDoc(doc(db, 'courses', courseId));
       if (courseDoc.exists()) {
-        setCourse({ id: courseDoc.id, ...courseDoc.data() });
+        setCourse({ id: courseDoc.id, ...courseDoc.data() } as Course);
       }
 
       const enrollmentsRef = collection(db, 'enrollments');
@@ -46,7 +69,7 @@ export default function CourseDetail({ userId }: CourseDetailProps) {
       const snapshot = await getDocs(q);
       
       if (!snapshot.empty) {
-        setEnrollment({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() });
+        setEnrollment({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Enrollment);
       }
     } catch (error) {
       console.error('Error loading course:', error);

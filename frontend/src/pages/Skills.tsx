@@ -34,6 +34,7 @@ export default function Skills({ userId }: SkillsProps) {
 
   useEffect(() => {
     loadSkills();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const loadSkills = async () => {

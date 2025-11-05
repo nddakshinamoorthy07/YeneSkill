@@ -12,12 +12,19 @@
     "seed": "node scripts/seedData.js"
   },
   "dependencies": {
+    "@types/d3": "^7.4.3",
+    "d3": "^7.9.0",
+    "dexie": "^4.2.1",
     "firebase": "^10.14.1",
     "framer-motion": "^12.23.24",
+    "i18next": "^25.6.0",
+    "i18next-browser-languagedetector": "^8.2.0",
     "lucide-react": "^0.552.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0"
+    "react-i18next": "^16.2.4",
+    "react-router-dom": "^6.20.0",
+    "workbox-window": "^7.3.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.5",
@@ -40,6 +47,8 @@
     "typescript": "^5.2.2",
     "typescript-eslint": "^7.0.0",
     "vite": "^5.0.8",
-    "vitest": "^1.0.4"
+    "vite-plugin-pwa": "^1.1.0",
+    "vitest": "^1.0.4",
+    "workbox-cli": "^7.3.0"
   }
 }

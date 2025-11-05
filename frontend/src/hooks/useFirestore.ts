@@ -35,6 +35,7 @@ export function useFirestore<T>(
     );
 
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionPath]);
 
   return { data, loading, error };

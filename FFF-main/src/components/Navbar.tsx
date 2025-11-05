@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap } from 'lucide-react';
+import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
+import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -26,16 +29,21 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const isAdmin = user?.email?.includes('admin');
+
   const navLinks = user
     ? [
-        { to: '/dashboard', label: 'Dashboard', icon: Home },
-        { to: '/lessons', label: 'Courses', icon: BookOpen },
-        { to: '/mentors', label: 'Mentors', icon: Users },
+        { to: '/dashboard', label: t('nav.dashboard'), icon: Home },
+        { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
+        { to: '/mentors', label: t('nav.mentors'), icon: Users },
+        { to: '/career', label: t('nav.career'), icon: Briefcase },
+        { to: '/messages', label: t('nav.messages'), icon: MessageSquare },
+        ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: Shield }] : []),
       ]
     : [
-        { to: '/', label: 'Home', icon: Home },
-        { to: '/lessons', label: 'Courses', icon: BookOpen },
-        { to: '/mentors', label: 'Mentors', icon: Users },
+        { to: '/', label: t('nav.home'), icon: Home },
+        { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
+        { to: '/mentors', label: t('nav.mentors'), icon: Users },
       ];
 
   return (
@@ -90,6 +98,7 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
+            <LanguageSwitcher />
             <ThemeToggle />
             {user ? (
               <div className="relative">
@@ -119,7 +128,7 @@ const Navbar = () => {
                         className="w-full flex items-center space-x-2 px-4 py-3 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       >
                         <LogOut className="w-4 h-4" />
-                        <span>Logout</span>
+                        <span>{t('nav.logout')}</span>
                       </button>
                     </motion.div>
                   )}
@@ -130,7 +139,7 @@ const Navbar = () => {
                 to="/login"
                 className="px-6 py-2 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all"
               >
-                Get Started
+                {t('nav.login')}
               </Link>
             )}
           </div>
@@ -176,7 +185,7 @@ const Navbar = () => {
                   className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-red-600"
                 >
                   <LogOut className="w-5 h-5" />
-                  <span>Logout</span>
+                  <span>{t('nav.logout')}</span>
                 </button>
               ) : (
                 <Link
@@ -184,7 +193,7 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                   className="block text-center px-6 py-2 bg-gradient-primary text-white font-semibold rounded-lg"
                 >
-                  Get Started
+                  {t('nav.login')}
                 </Link>
               )}
             </div>
