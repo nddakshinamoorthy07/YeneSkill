@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield, User, BookMarked } from 'lucide-react';
+import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield, User, BookMarked, Bot } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -35,6 +35,7 @@ const Navbar = () => {
     ? [
         { to: '/dashboard', label: t('nav.dashboard'), icon: Home },
         { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
+        { to: '/ai-assistant', label: 'AI Assistant', icon: Bot },
         { to: '/library', label: 'Library', icon: BookMarked },
         { to: '/mentors', label: t('nav.mentors'), icon: Users },
         { to: '/career', label: t('nav.career'), icon: Briefcase },
@@ -44,6 +45,7 @@ const Navbar = () => {
     : [
         { to: '/', label: t('nav.home'), icon: Home },
         { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
+        { to: '/ai-assistant', label: 'AI Assistant', icon: Bot },
         { to: '/library', label: 'Library', icon: BookMarked },
         { to: '/mentors', label: t('nav.mentors'), icon: Users },
       ];
