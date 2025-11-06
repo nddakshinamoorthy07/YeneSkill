@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, Target, TrendingUp } from 'lucide-react';
+import { Download, Target, TrendingUp, BookOpen, Award, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import * as d3 from 'd3';
 import { sampleCourses } from '../data/sampleData';
 import { useAuth } from '../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 interface Skill {
   id: string;
@@ -89,6 +90,19 @@ export default function CareerPage() {
 
   // Use user skills if available, otherwise use sample skills
   const displaySkills = userSkills.length > 0 ? userSkills : sampleSkills;
+
+  // Get enrolled courses
+  const enrolledCourses = sampleCourses.filter(c => c.progress > 0);
+  const availableCourses = sampleCourses.filter(c => c.progress === 0);
+
+  // Calculate total learning stats
+  const totalHoursLearned = enrolledCourses.reduce((sum, course) => 
+    sum + (course.totalHours * course.progress / 100), 0
+  );
+  const totalHoursRemaining = enrolledCourses.reduce((sum, course) => 
+    sum + (course.totalHours * (100 - course.progress) / 100), 0
+  );
+  const completedCourses = enrolledCourses.filter(c => c.progress === 100).length;
 
   // Generate recommended skills based on what user doesn't have yet
   const getRecommendedSkills = (): string[] => {
@@ -192,6 +206,11 @@ export default function CareerPage() {
           Backend: '#8b5cf6',
           Database: '#10b981',
           Tools: '#f59e0b',
+          'Web Development': '#3b82f6',
+          'Artificial Intelligence': '#8b5cf6',
+          'Data Science': '#10b981',
+          Design: '#f59e0b',
+          'Backend Development': '#8b5cf6',
         };
         return colors[d.category] || '#6b7280';
       })
@@ -232,7 +251,7 @@ export default function CareerPage() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-8"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             {t('career.title')}
@@ -241,6 +260,118 @@ export default function CareerPage() {
             {t('career.subtitle')}
           </p>
         </motion.div>
+
+        {/* Learning Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Enrolled Courses</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{enrolledCourses.length}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <Award className="w-6 h-6 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Completed</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{completedCourses}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Hours Learned</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{Math.round(totalHoursLearned)}</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Enrolled Courses Section */}
+        {enrolledCourses.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">My Learning Journey</h2>
+              <Link 
+                to="/lessons" 
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                View All Courses →
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrolledCourses.map((course) => (
+                <Link
+                  key={course.id}
+                  to={`/lessons/${course.id}`}
+                  className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+                >
+                  <div className="relative h-40">
+                    <img 
+                      src={course.thumbnail} 
+                      alt={course.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm px-3 py-1 rounded-full">
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {course.progress}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                      {course.title}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+                        {course.level}
+                      </span>
+                      <span>•</span>
+                      <span>{course.duration}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all"
+                        style={{ width: `${course.progress}%` }}
+                      />
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {course.tags.slice(0, 3).map((tag) => (
+                        <span 
+                          key={tag}
+                          className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           <motion.div
@@ -267,35 +398,40 @@ export default function CareerPage() {
                   <p className="text-gray-500 dark:text-gray-400 text-center max-w-md mb-6">
                     Enroll in courses to build your skill roadmap. Your skills will appear here as you learn.
                   </p>
-                  <a
-                    href="/lessons"
+                  <Link
+                    to="/lessons"
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
                   >
                     Browse Courses
-                  </a>
+                  </Link>
                 </div>
               ) : (
                 <svg ref={svgRef} className="w-full" style={{ minHeight: '600px' }} />
               )}
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
-              {['Programming', 'Frontend', 'Backend', 'Database', 'Tools'].map((category) => (
-                <div key={category} className="flex items-center gap-2">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{
-                      background: {
-                        Programming: '#3b82f6',
-                        Frontend: '#06b6d4',
-                        Backend: '#8b5cf6',
-                        Database: '#10b981',
-                        Tools: '#f59e0b',
-                      }[category],
-                    }}
-                  />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">{category}</span>
-                </div>
-              ))}
+              {['Programming', 'Frontend', 'Backend', 'Database', 'Tools', 'Web Development', 'Artificial Intelligence', 'Data Science', 'Design'].map((category) => {
+                const colors: Record<string, string> = {
+                  Programming: '#3b82f6',
+                  Frontend: '#06b6d4',
+                  Backend: '#8b5cf6',
+                  Database: '#10b981',
+                  Tools: '#f59e0b',
+                  'Web Development': '#3b82f6',
+                  'Artificial Intelligence': '#8b5cf6',
+                  'Data Science': '#10b981',
+                  Design: '#f59e0b',
+                };
+                return (
+                  <div key={category} className="flex items-center gap-2">
+                    <div
+                      className="w-4 h-4 rounded-full"
+                      style={{ background: colors[category] }}
+                    />
+                    <span className="text-sm text-gray-600 dark:text-gray-400">{category}</span>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
 
@@ -358,6 +494,14 @@ export default function CareerPage() {
                   </p>
                 )}
               </div>
+              {availableCourses.length > 0 && (
+                <Link
+                  to="/lessons"
+                  className="mt-4 block w-full text-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                >
+                  Explore More Courses
+                </Link>
+              )}
             </div>
 
             <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-xl p-6 text-white">

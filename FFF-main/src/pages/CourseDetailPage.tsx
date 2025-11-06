@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Play, Clock, Users, Star, Award, CheckCircle, Lock, Share2, Bookmark } from 'lucide-react';
+import { Play, Clock, Users, Star, Award, CheckCircle, Lock, Share2, Bookmark, LogOut, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import Tag from '../components/Tag';
 import ProgressBar from '../components/ProgressBar';
@@ -20,6 +20,7 @@ const CourseDetailPage = () => {
     const enrolled = localStorage.getItem('enrolledCourses');
     return enrolled ? JSON.parse(enrolled).includes(id) : false;
   });
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   
   const course = sampleCourses.find(c => c.id === id);
   const mentor = course ? sampleMentors.find(m => m.id === course.mentorId) : null;
@@ -49,10 +50,45 @@ const CourseDetailPage = () => {
       setIsEnrolled(true);
       const enrolled = localStorage.getItem('enrolledCourses');
       const enrolledList = enrolled ? JSON.parse(enrolled) : [];
-      enrolledList.push(id);
+      if (!enrolledList.includes(id)) {
+        enrolledList.push(id);
+      }
       localStorage.setItem('enrolledCourses', JSON.stringify(enrolledList));
+      
+      // Update course progress
+      const courseProgress = localStorage.getItem('courseProgress');
+      const progressData = courseProgress ? JSON.parse(courseProgress) : {};
+      if (!progressData[id!]) {
+        progressData[id!] = 0;
+      }
+      localStorage.setItem('courseProgress', JSON.stringify(progressData));
+      
+      alert('✅ Successfully enrolled in the course!');
     }
     setVideoModalOpen(true);
+  };
+
+  const handleWithdraw = () => {
+    setShowWithdrawModal(true);
+  };
+
+  const confirmWithdraw = () => {
+    setIsEnrolled(false);
+    
+    // Remove from enrolled courses
+    const enrolled = localStorage.getItem('enrolledCourses');
+    let enrolledList = enrolled ? JSON.parse(enrolled) : [];
+    enrolledList = enrolledList.filter((courseId: string) => courseId !== id);
+    localStorage.setItem('enrolledCourses', JSON.stringify(enrolledList));
+    
+    // Reset course progress
+    const courseProgress = localStorage.getItem('courseProgress');
+    const progressData = courseProgress ? JSON.parse(courseProgress) : {};
+    delete progressData[id!];
+    localStorage.setItem('courseProgress', JSON.stringify(progressData));
+    
+    setShowWithdrawModal(false);
+    alert('You have withdrawn from this course. Your progress has been reset.');
   };
 
   const handleContinueLearning = () => {
@@ -373,12 +409,32 @@ const CourseDetailPage = () => {
                   </div>
                 ) : null}
 
-                <button 
-                  onClick={isEnrolled || course.progress ? handleContinueLearning : handleEnroll}
-                  className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all"
-                >
-                  {isEnrolled || course.progress ? 'Continue Learning' : 'Enroll Now'}
-                </button>
+                {!isEnrolled && !course.progress ? (
+                  <button 
+                    onClick={handleEnroll}
+                    className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Play className="w-5 h-5" />
+                    Enroll Now - Start Learning
+                  </button>
+                ) : (
+                  <div className="space-y-3 mb-3">
+                    <button 
+                      onClick={handleContinueLearning}
+                      className="w-full py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                    >
+                      <Play className="w-5 h-5" />
+                      Continue Learning
+                    </button>
+                    <button 
+                      onClick={handleWithdraw}
+                      className="w-full py-2 border-2 border-red-500 text-red-500 font-medium rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Withdraw from Course
+                    </button>
+                  </div>
+                )}
 
                 <div className="flex gap-2">
                   <button 
@@ -426,6 +482,47 @@ const CourseDetailPage = () => {
         videoUrl={course.videoUrl}
         title={course.title}
       />
+
+      {/* Withdraw Confirmation Modal */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Withdraw from Course?
+              </h3>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Are you sure you want to withdraw from <strong>{course.title}</strong>? 
+              This will remove you from the course and reset all your progress. This action cannot be undone.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowWithdrawModal(false)}
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmWithdraw}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center justify-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Yes, Withdraw
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

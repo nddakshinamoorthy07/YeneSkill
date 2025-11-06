@@ -2,18 +2,14 @@ import { motion } from 'framer-motion';
 import { TrendingUp, BookOpen, Trophy, Clock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import CourseCard from '../components/CourseCard';
-import MentorCard from '../components/MentorCard';
 import ProgressBar from '../components/ProgressBar';
-import { sampleCourses, sampleMentors } from '../data/sampleData';
-import { useState } from 'react';
+import { sampleCourses } from '../data/sampleData';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [, setSelectedMentor] = useState<typeof sampleMentors[0] | null>(null);
 
   const continueLearning = sampleCourses.filter(c => c.progress && c.progress > 0);
   const recommendedCourses = sampleCourses.filter(c => !c.progress || c.progress === 0).slice(0, 3);
-  const topMentors = sampleMentors.slice(0, 3);
 
   const stats = [
     { icon: BookOpen, label: 'Courses Enrolled', value: '8', color: 'from-blue-500 to-cyan-500' },
@@ -101,7 +97,6 @@ const Dashboard = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mb-12"
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recommended for You</h2>
@@ -113,29 +108,6 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {recommendedCourses.map((course) => (
               <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Top Mentors</h2>
-            <a href="/mentors" className="text-primary hover:underline font-medium">
-              View All
-            </a>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topMentors.map((mentor) => (
-              <MentorCard
-                key={mentor.id}
-                mentor={mentor}
-                onViewProfile={() => setSelectedMentor(mentor)}
-              />
             ))}
           </div>
         </motion.section>

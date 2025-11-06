@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
-import { Clock, Users, Star, Play } from 'lucide-react';
+import { Clock, Users, Star, Play, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useWithdraw } from '../hooks/useWithdraw';
 import Tag from './Tag';
 import ProgressBar from './ProgressBar';
 
@@ -17,14 +19,38 @@ interface CourseCardProps {
     tags: string[];
     progress?: number;
   };
+  onWithdrawSuccess?: () => void;
 }
 
-const CourseCard = ({ course }: CourseCardProps) => {
+const CourseCard = ({ course, onWithdrawSuccess }: CourseCardProps) => {
+  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const { withdrawFromCourse, isWithdrawing } = useWithdraw();
+
+  const handleWithdraw = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowWithdrawModal(true);
+  };
+
+  const confirmWithdraw = async () => {
+    const success = await withdrawFromCourse(course.id);
+    if (success) {
+      alert('You have been withdrawn from this course.');
+      setShowWithdrawModal(false);
+      if (onWithdrawSuccess) {
+        onWithdrawSuccess();
+      }
+    } else {
+      alert('Failed to withdraw. Please try again.');
+    }
+  };
+
   return (
-    <motion.div
-      whileHover={{ y: -8 }}
-      className="group bg-white dark:bg-gray-800 rounded-2xl shadow-card hover:shadow-card-hover transition-all overflow-hidden"
-    >
+    <>
+      <motion.div
+        whileHover={{ y: -8 }}
+        className="group bg-white dark:bg-gray-800 rounded-2xl shadow-card hover:shadow-card-hover transition-all overflow-hidden"
+      >
       <div className="relative h-48 overflow-hidden">
         <img
           src={course.thumbnail}
@@ -70,7 +96,7 @@ const CourseCard = ({ course }: CourseCardProps) => {
           </div>
         )}
 
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-4">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               <Clock className="w-4 h-4" />
@@ -86,8 +112,61 @@ const CourseCard = ({ course }: CourseCardProps) => {
             <span className="font-semibold">{course.rating}</span>
           </div>
         </div>
+
+        {course.progress !== undefined && course.progress > 0 && (
+          <button
+            onClick={handleWithdraw}
+            disabled={isWithdrawing}
+            className="w-full py-2 border-2 border-red-500 text-red-500 font-medium rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>{isWithdrawing ? 'Withdrawing...' : 'Withdraw'}</span>
+          </button>
+        )}
       </div>
-    </motion.div>
+      </motion.div>
+
+      {/* Withdraw Confirmation Modal */}
+      {showWithdrawModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowWithdrawModal(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full p-6"
+          >
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                <LogOut className="w-6 h-6 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Withdraw from Course?
+              </h3>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Are you sure you want to withdraw from "{course.title}"? Your progress will be lost and you'll need to re-enroll to access the course again.
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowWithdrawModal(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmWithdraw}
+                disabled={isWithdrawing}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isWithdrawing ? 'Withdrawing...' : 'Withdraw'}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </>
   );
 };
 
