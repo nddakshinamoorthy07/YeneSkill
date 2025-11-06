@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap } from 'lucide-react';
+import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import { useAuth } from '../hooks/useAuth';
 
@@ -30,11 +30,13 @@ const Navbar = () => {
     ? [
         { to: '/dashboard', label: 'Dashboard', icon: Home },
         { to: '/lessons', label: 'Courses', icon: BookOpen },
+        { to: '/industrial-support', label: 'Industrial Support', icon: Briefcase },
         { to: '/mentors', label: 'Mentors', icon: Users },
       ]
     : [
         { to: '/', label: 'Home', icon: Home },
         { to: '/lessons', label: 'Courses', icon: BookOpen },
+        { to: '/industrial-support', label: 'Industrial Support', icon: Briefcase },
         { to: '/mentors', label: 'Mentors', icon: Users },
       ];
 

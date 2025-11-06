@@ -15,6 +15,7 @@ import AdminPage from './pages/AdminPage';
 import ProfilePage from './pages/ProfilePage';
 import LibraryPage from './pages/LibraryPage';
 import AIAssistantPage from './pages/AIAssistantPage';
+import IndustrialSupportPage from './pages/IndustrialSupportPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ function App() {
           <Route path="/course/:id" element={<CourseDetailPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/ai-assistant" element={<AIAssistantPage />} />
+          <Route path="/industrial-support" element={<IndustrialSupportPage />} />
           <Route
             path="/dashboard"
             element={

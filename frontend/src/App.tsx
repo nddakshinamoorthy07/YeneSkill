@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import CoursesPage from './pages/CoursesPage';
 import MentorsPage from './pages/MentorsPage';
 import CourseDetailPage from './pages/CourseDetailPage';
+import IndustrialSupportPage from './pages/IndustrialSupportPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -32,6 +33,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/lessons" element={<CoursesPage />} />
           <Route path="/mentors" element={<MentorsPage />} />
+          <Route path="/industrial-support" element={<IndustrialSupportPage />} />
           <Route path="/course/:id" element={<CourseDetailPage />} />
           <Route
             path="/dashboard"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield, User, BookMarked, Bot } from 'lucide-react';
+import { Menu, X, LogOut, BookOpen, Users, Home, GraduationCap, Briefcase, MessageSquare, Shield, User, BookMarked, Factory } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -62,6 +62,7 @@ const Navbar = () => {
         { to: '/library', label: t('nav.library'), icon: BookMarked },
         { to: '/mentors', label: t('nav.mentors'), icon: Users },
         { to: '/career', label: t('nav.career'), icon: Briefcase },
+        { to: '/industrial-support', label: 'Industrial Support', icon: Factory },
         { to: '/messages', label: t('nav.messages'), icon: MessageSquare },
         ...(isAdmin ? [{ to: '/admin', label: 'Admin', icon: Shield }] : []),
       ]
@@ -70,6 +71,7 @@ const Navbar = () => {
         { to: '/lessons', label: t('nav.courses'), icon: BookOpen },
         { to: '/library', label: t('nav.library'), icon: BookMarked },
         { to: '/mentors', label: t('nav.mentors'), icon: Users },
+        { to: '/industrial-support', label: 'Industrial Support', icon: Factory },
       ];
 
   return (
