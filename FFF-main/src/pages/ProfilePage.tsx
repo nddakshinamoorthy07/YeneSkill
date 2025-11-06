@@ -89,7 +89,7 @@ export default function ProfilePage() {
       
       // If user document doesn't exist, create it
       if (!userDoc.exists()) {
-        const newProfile = {
+        const newProfile: UserProfile = {
           displayName: user.displayName || 'Anonymous User',
           email: user.email || '',
           bio: 'Welcome to YeneSkill! Click edit to add your bio.',
@@ -109,14 +109,15 @@ export default function ProfilePage() {
         setDisplayName(newProfile.displayName);
       } else {
         const data = userDoc.data();
-        const profileData = {
+        const theme: 'light' | 'dark' = data?.theme === 'dark' ? 'dark' : 'light';
+        const profileData: UserProfile = {
           displayName: data.displayName || user.displayName || 'Anonymous',
           email: user.email || '',
           bio: data.bio || 'No bio yet. Click edit to add one!',
           photoURL: data.photoURL || user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || 'User')}&background=3B82F6&color=fff&size=300`,
           createdAt: data.createdAt?.toDate() || new Date(),
           language: data.language || 'en',
-          theme: data.theme || 'light',
+          theme,
           streak: data.streak || 0,
           totalCourses: data.totalCourses || 0,
           completedCourses: data.completedCourses || 0,

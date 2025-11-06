@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Download, Target, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import * as d3 from 'd3';
+import { sampleCourses } from '../data/sampleData';
+import { useAuth } from '../hooks/useAuth';
 
 interface Skill {
   id: string;
@@ -23,10 +25,90 @@ const sampleSkills: Skill[] = [
   { id: '8', name: 'Git', category: 'Tools', level: 3, related: ['1'] },
 ];
 
+// Function to extract skills from courses
+const extractSkillsFromCourses = (courses: typeof sampleCourses): Skill[] => {
+  const skillMap = new Map<string, { count: number; category: string; related: Set<string> }>();
+  
+  // Only include courses with progress > 0 (enrolled/started courses)
+  const enrolledCourses = courses.filter(c => c.progress > 0);
+  
+  enrolledCourses.forEach((course) => {
+    course.tags.forEach((tag, index) => {
+      if (!skillMap.has(tag)) {
+        skillMap.set(tag, {
+          count: 0,
+          category: course.category,
+          related: new Set()
+        });
+      }
+      
+      const skill = skillMap.get(tag)!;
+      skill.count += course.progress; // Weight by progress
+      
+      // Add related skills from same course
+      course.tags.forEach((otherTag) => {
+        if (otherTag !== tag) {
+          skill.related.add(otherTag);
+        }
+      });
+    });
+  });
+  
+  // Convert to Skill array
+  const skills: Skill[] = Array.from(skillMap.entries()).map(([name, data], index) => ({
+    id: (index + 1).toString(),
+    name,
+    category: data.category,
+    level: Math.min(3, Math.ceil(data.count / 30)), // Level based on progress
+    related: []
+  }));
+  
+  // Set up relationships using IDs
+  skills.forEach(skill => {
+    const relatedNames = skillMap.get(skill.name)!.related;
+    skill.related = skills
+      .filter(s => relatedNames.has(s.name))
+      .map(s => s.id);
+  });
+  
+  return skills.length > 0 ? skills : [];
+};
+
 export default function CareerPage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
+  const [userSkills, setUserSkills] = useState<Skill[]>([]);
+
+  // Load user's skills from their enrolled courses
+  useEffect(() => {
+    const skills = extractSkillsFromCourses(sampleCourses);
+    setUserSkills(skills);
+  }, []);
+
+  // Use user skills if available, otherwise use sample skills
+  const displaySkills = userSkills.length > 0 ? userSkills : sampleSkills;
+
+  // Generate recommended skills based on what user doesn't have yet
+  const getRecommendedSkills = (): string[] => {
+    const userSkillNames = new Set(displaySkills.map(s => s.name));
+    const allPossibleSkills = new Set<string>();
+    
+    // Collect all skills from all courses
+    sampleCourses.forEach(course => {
+      course.tags.forEach(tag => allPossibleSkills.add(tag));
+    });
+    
+    // Filter out skills user already has
+    const recommended = Array.from(allPossibleSkills)
+      .filter(skill => !userSkillNames.has(skill))
+      .slice(0, 5); // Top 5 recommendations
+    
+    return recommended.length > 0 ? recommended : ['Docker', 'Kubernetes', 'AWS'];
+  };
+
+  const recommendedSkills = getRecommendedSkills();
 
   useEffect(() => {
     if (!svgRef.current) return;
@@ -42,13 +124,13 @@ export default function CareerPage() {
       .attr('height', '100%')
       .attr('viewBox', `0 0 ${width} ${height}`);
 
-    const nodes = sampleSkills.map((skill) => ({
+    const nodes = displaySkills.map((skill) => ({
       ...skill,
       x: width / 2 + (Math.random() - 0.5) * 400,
       y: height / 2 + (Math.random() - 0.5) * 400,
     }));
 
-    const links = sampleSkills.flatMap((skill) =>
+    const links = displaySkills.flatMap((skill) =>
       skill.related.map((relatedId) => ({
         source: skill.id,
         target: relatedId,
@@ -142,7 +224,7 @@ export default function CareerPage() {
     return () => {
       simulation.stop();
     };
-  }, []);
+  }, [displaySkills]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
@@ -175,8 +257,26 @@ export default function CareerPage() {
                 {t('career.export')}
               </button>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden">
-              <svg ref={svgRef} className="w-full" style={{ minHeight: '600px' }} />
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden relative">
+              {displaySkills.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 px-4">
+                  <Target className="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    Start Your Learning Journey
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 text-center max-w-md mb-6">
+                    Enroll in courses to build your skill roadmap. Your skills will appear here as you learn.
+                  </p>
+                  <a
+                    href="/lessons"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  >
+                    Browse Courses
+                  </a>
+                </div>
+              ) : (
+                <svg ref={svgRef} className="w-full" style={{ minHeight: '600px' }} />
+              )}
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
               {['Programming', 'Frontend', 'Backend', 'Database', 'Tools'].map((category) => (
@@ -243,14 +343,20 @@ export default function CareerPage() {
                 </h3>
               </div>
               <div className="space-y-2">
-                {['Docker', 'Kubernetes', 'AWS'].map((skill) => (
-                  <div
-                    key={skill}
-                    className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-                  >
-                    <p className="font-medium text-gray-900 dark:text-white">{skill}</p>
-                  </div>
-                ))}
+                {recommendedSkills.length > 0 ? (
+                  recommendedSkills.map((skill) => (
+                    <div
+                      key={skill}
+                      className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      <p className="font-medium text-gray-900 dark:text-white">{skill}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-gray-600 dark:text-gray-400 text-sm">
+                    Start learning courses to get personalized recommendations!
+                  </p>
+                )}
               </div>
             </div>
 
