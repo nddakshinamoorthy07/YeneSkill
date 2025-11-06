@@ -7,7 +7,7 @@ import ProgressBar from '../components/ProgressBar';
 import { sampleCourses, sampleMentors } from '../data/sampleData';
 import { useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, onSnapshot, query } from 'firebase/firestore';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -25,51 +25,95 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      fetchUserData();
+      const cleanup = setupRealtimeListeners();
+      return cleanup;
     } else {
       setLoading(false);
     }
   }, [user]);
 
-  const fetchUserData = async () => {
-    if (!user) return;
-
-    try {
-      setLoading(true);
-
-      // Fetch user's courses
-      const coursesSnapshot = await getDocs(collection(db, 'users', user.uid, 'courses'));
-      const courses = coursesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setUserCourses(courses);
-
-      // Fetch user document for stats
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-      const userData = userDoc.data();
-
-      // Calculate stats from courses and user data
-      const enrolledCount = courses.length;
-      const completedCount = courses.filter((c: any) => c.progress === 100).length;
-      const totalHours = courses.reduce((sum: number, c: any) => {
-        return sum + ((c.durationHours || 0) * ((c.progress || 0) / 100));
-      }, 0);
-
-      setUserStats({
-        coursesEnrolled: enrolledCount,
-        certificates: completedCount,
-        hoursLearned: Math.round(totalHours),
-        streak: userData?.streak || 0,
-        weeklyHoursCompleted: userData?.weeklyHoursCompleted || 0,
-        weeklyGoal: userData?.weeklyGoal || 10,
-      });
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    } finally {
+  const setupRealtimeListeners = () => {
+    if (!user) {
       setLoading(false);
+      return () => {};
     }
+
+    setLoading(true);
+
+    // Real-time listener for enrollments
+    const enrollmentsQuery = query(collection(db, 'enrollments'));
+    const unsubscribeEnrollments = onSnapshot(
+      enrollmentsQuery, 
+      async (snapshot) => {
+        // Filter enrollments for current user
+        const userEnrollments = snapshot.docs
+          .map(doc => ({ id: doc.id, ...doc.data() }))
+          .filter((enrollment: any) => enrollment.userId === user.uid);
+
+        setUserCourses(userEnrollments);
+
+        // Fetch user document for additional stats
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+          const userData = userDoc.data();
+
+          // Calculate stats from enrollments
+          const enrolledCount = userEnrollments.length;
+          const completedCount = userEnrollments.filter((e: any) => e.progress === 100).length;
+          
+          // Estimate hours learned (you might want to add actual duration to course data)
+          const totalHours = userEnrollments.reduce((sum: number, e: any) => {
+            const estimatedDuration = 10; // Default hours per course
+            return sum + (estimatedDuration * ((e.progress || 0) / 100));
+          }, 0);
+
+          setUserStats({
+            coursesEnrolled: enrolledCount,
+            certificates: completedCount,
+            hoursLearned: Math.round(totalHours),
+            streak: userData?.streak || 0,
+            weeklyHoursCompleted: userData?.weeklyHoursCompleted || 0,
+            weeklyGoal: userData?.weeklyGoal || 10,
+          });
+
+          setLoading(false);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          setLoading(false);
+        }
+      },
+      (error) => {
+        console.error('Error listening to enrollments:', error);
+        setLoading(false);
+      }
+    );
+
+    // Real-time listener for user document
+    const userDocRef = doc(db, 'users', user.uid);
+    const unsubscribeUser = onSnapshot(
+      userDocRef, 
+      (docSnapshot) => {
+        const userData = docSnapshot.data();
+        if (userData) {
+          setUserStats(prev => ({
+            ...prev,
+            streak: userData.streak || 0,
+            weeklyHoursCompleted: userData.weeklyHoursCompleted || 0,
+            weeklyGoal: userData.weeklyGoal || 10,
+          }));
+        }
+      },
+      (error) => {
+        console.error('Error listening to user document:', error);
+      }
+    );
+
+    // Cleanup listeners on unmount
+    return () => {
+      unsubscribeEnrollments();
+      unsubscribeUser();
+    };
   };
 
   const continueLearning = userCourses.filter(c => c.progress && c.progress > 0 && c.progress < 100);

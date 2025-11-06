@@ -6,12 +6,15 @@ import { useTranslation } from 'react-i18next';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../hooks/useAuth';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Navbar = () => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [displayName, setDisplayName] = useState<string>('');
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -23,6 +26,27 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      if (user) {
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setDisplayName(userData?.displayName || userData?.name || user.email?.split('@')[0] || 'User');
+          } else {
+            setDisplayName(user.email?.split('@')[0] || 'User');
+          }
+        } catch (error) {
+          console.error('Error fetching user name:', error);
+          setDisplayName(user.email?.split('@')[0] || 'User');
+        }
+      }
+    };
+    fetchUserName();
+  }, [user]);
 
   const handleLogout = async () => {
     await logout();
@@ -109,7 +133,7 @@ const Navbar = () => {
                   className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center text-white font-semibold">
-                    {user.email?.[0].toUpperCase()}
+                    {displayName?.[0]?.toUpperCase() || user.email?.[0].toUpperCase()}
                   </div>
                 </button>
                 <AnimatePresence>
@@ -122,7 +146,7 @@ const Navbar = () => {
                     >
                       <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                         <p className="text-sm font-medium text-gray-900 dark:text-white">
-                          {user.email}
+                          {displayName || user.email?.split('@')[0] || 'User'}
                         </p>
                       </div>
                       <Link

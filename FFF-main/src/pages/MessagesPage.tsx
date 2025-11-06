@@ -63,7 +63,7 @@ export default function MessagesPage() {
       const mentor = sampleMentors.find(m => m.id === state.mentorId);
       
       // Check if thread already exists
-      let existingThread = threads.find(t => t.participantName === state.mentorName);
+      const existingThread = threads.find(t => t.participantName === state.mentorName);
       
       if (!existingThread && mentor) {
         // Create new thread for this mentor
@@ -83,7 +83,7 @@ export default function MessagesPage() {
         setSelectedThread(existingThread);
       }
     }
-  }, [location.state]);
+  }, [location.state, threads]);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -184,7 +184,10 @@ export default function MessagesPage() {
                       <p className="text-sm text-gray-500">Online</p>
                     </div>
                   </div>
-                  <button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+                  <button 
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                    aria-label="More options"
+                  >
                     <MoreVertical className="w-5 h-5" />
                   </button>
                 </div>
