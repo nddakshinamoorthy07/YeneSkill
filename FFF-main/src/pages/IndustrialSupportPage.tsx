@@ -1,13 +1,30 @@
 import { motion } from 'framer-motion';
 import { 
-  Award, Users, Laptop, ChevronRight, Sparkles 
+  Award, Users, Laptop, ChevronRight, Sparkles, Filter 
 } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { industrialCourses } from '../data/sampleData';
 import CourseCard from '../components/CourseCard';
+import SearchBar from '../components/SearchBar';
 
 const IndustrialSupportPage = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState<string>('All Levels');
+  const [showFilters, setShowFilters] = useState(false);
+
+  const levels = ['All Levels', 'Beginner', 'Intermediate', 'Advanced'];
+
+  const filteredCourses = useMemo(() => {
+    return industrialCourses.filter((course) => {
+      const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesLevel = selectedLevel === 'All Levels' || course.level === selectedLevel;
+      return matchesSearch && matchesLevel;
+    });
+  }, [searchQuery, selectedLevel]);
 
   const certificationBenefits = [
     {
@@ -82,7 +99,7 @@ const IndustrialSupportPage = () => {
           transition={{ delay: 0.3 }}
           className="mb-20"
         >
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Industry-Aligned Courses
             </h2>
@@ -95,18 +112,107 @@ const IndustrialSupportPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {industrialCourses.map((course, index) => (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
+          {/* Search and Filter Section */}
+          <div className="mb-8 space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <SearchBar
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search industrial courses by title, topic, or keyword..."
+                />
+              </div>
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="md:hidden flex items-center justify-center space-x-2 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
-                <CourseCard course={course} />
-              </motion.div>
-            ))}
+                <Filter className="w-5 h-5" />
+                <span>Filters</span>
+              </button>
+            </div>
+
+            <motion.div
+              initial={false}
+              animate={{ height: showFilters || window.innerWidth >= 768 ? 'auto' : 0 }}
+              className="overflow-hidden md:overflow-visible"
+            >
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Level
+                  </label>
+                  <select
+                    value={selectedLevel}
+                    onChange={(e) => setSelectedLevel(e.target.value)}
+                    className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-gray-900 dark:text-white"
+                  >
+                    {levels.map((level) => (
+                      <option key={level} value={level}>
+                        {level}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex-1 flex items-end">
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setSelectedLevel('All Levels');
+                    }}
+                    className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
+
+          {/* Results Count */}
+          <div className="mb-6">
+            <p className="text-gray-600 dark:text-gray-400">
+              Showing <span className="font-bold text-primary">{filteredCourses.length}</span> of {industrialCourses.length} courses
+            </p>
+          </div>
+
+          {/* Courses Grid */}
+          {filteredCourses.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredCourses.map((course, index) => (
+                <motion.div
+                  key={course.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.1 }}
+                >
+                  <CourseCard course={course} />
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl"
+            >
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                No courses found
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">
+                Try adjusting your search or filter criteria
+              </p>
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedLevel('All Levels');
+                }}
+                className="px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+              >
+                Clear All Filters
+              </button>
+            </motion.div>
+          )}
         </motion.section>
 
         {/* Career & Certification Support Section */}

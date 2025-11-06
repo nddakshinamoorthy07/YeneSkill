@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Tag from '../components/Tag';
 import ProgressBar from '../components/ProgressBar';
 import VideoModal from '../components/VideoModal';
-import { sampleCourses, sampleMentors } from '../data/sampleData';
+import { sampleCourses, sampleMentors, industrialCourses } from '../data/sampleData';
 
 const CourseDetailPage = () => {
   const { id } = useParams();
@@ -22,7 +22,8 @@ const CourseDetailPage = () => {
   });
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   
-  const course = sampleCourses.find(c => c.id === id);
+  const allCourses = [...sampleCourses, ...industrialCourses];
+  const course = allCourses.find(c => c.id === id);
   const mentor = course ? sampleMentors.find(m => m.id === course.mentorId) : null;
 
   if (!course || !mentor) {
