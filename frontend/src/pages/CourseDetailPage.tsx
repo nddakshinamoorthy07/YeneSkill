@@ -1,8 +1,10 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Play, Clock, Users, Star, Award, CheckCircle, Lock, Share2, Bookmark, LogOut } from 'lucide-react';
+import { Play, Clock, Users, Star, Award, CheckCircle, Lock, Share2, Bookmark, LogOut, BookmarkPlus } from 'lucide-react';
 import { useState } from 'react';
 import { useWithdraw } from '../hooks/useWithdraw';
+import { useEnroll } from '../hooks/useEnroll';
+import { useEnrollmentStatus } from '../hooks/useEnrollmentStatus';
 import Tag from '../components/Tag';
 import ProgressBar from '../components/ProgressBar';
 import VideoModal from '../components/VideoModal';
@@ -10,11 +12,12 @@ import { sampleCourses, sampleMentors } from '../data/sampleData';
 
 const CourseDetailPage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
   const { withdrawFromCourse, isWithdrawing } = useWithdraw();
+  const { enrollInCourse, isEnrolling } = useEnroll();
+  const { isEnrolled, progress, loading } = useEnrollmentStatus(id || '');
   
   const course = sampleCourses.find(c => c.id === id);
   const mentor = course ? sampleMentors.find(m => m.id === course.mentorId) : null;
@@ -39,6 +42,18 @@ const CourseDetailPage = () => {
     { id: 'resources', label: 'Resources' },
   ];
 
+  const handleEnroll = async () => {
+    if (!id) return;
+    
+    const success = await enrollInCourse(id);
+    if (success) {
+      alert('Successfully enrolled in course!');
+      window.location.reload();
+    } else {
+      alert('Failed to enroll. You may already be enrolled.');
+    }
+  };
+
   const handleWithdraw = async () => {
     if (!id) return;
     
@@ -46,7 +61,7 @@ const CourseDetailPage = () => {
     if (success) {
       alert('You have been withdrawn from this course.');
       setWithdrawModalOpen(false);
-      navigate('/courses');
+      window.location.reload();
     } else {
       alert('Failed to withdraw from course. Please try again.');
       setWithdrawModalOpen(false);
@@ -315,25 +330,43 @@ const CourseDetailPage = () => {
                   </div>
                 </div>
 
-                {course.progress !== undefined && course.progress > 0 ? (
+                {isEnrolled && progress > 0 && (
                   <div className="mb-4">
-                    <ProgressBar progress={course.progress} />
+                    <ProgressBar progress={progress} />
                   </div>
-                ) : null}
+                )}
 
-                <button className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all flex items-center justify-center space-x-2">
-                  <Play className="w-5 h-5" />
-                  <span>{course.progress ? 'Continue Learning' : 'Enroll Now'}</span>
-                </button>
+                {!loading && (
+                  <>
+                    {isEnrolled ? (
+                      <button 
+                        onClick={() => setVideoModalOpen(true)}
+                        className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all flex items-center justify-center space-x-2"
+                      >
+                        <Play className="w-5 h-5" />
+                        <span>Continue Learning</span>
+                      </button>
+                    ) : (
+                      <button 
+                        onClick={handleEnroll}
+                        disabled={isEnrolling}
+                        className="w-full mb-3 py-3 bg-gradient-primary text-white font-semibold rounded-lg hover:shadow-card-hover transform hover:scale-105 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <BookmarkPlus className="w-5 h-5" />
+                        <span>{isEnrolling ? 'Enrolling...' : 'Enroll Now'}</span>
+                      </button>
+                    )}
 
-                {course.progress !== undefined && course.progress > 0 && (
-                  <button 
-                    onClick={() => setWithdrawModalOpen(true)}
-                    className="w-full mb-3 py-3 border-2 border-red-500 text-red-500 font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center space-x-2"
-                  >
-                    <LogOut className="w-5 h-5" />
-                    <span>Withdraw from Course</span>
-                  </button>
+                    {isEnrolled && (
+                      <button 
+                        onClick={() => setWithdrawModalOpen(true)}
+                        className="w-full mb-3 py-3 border-2 border-red-500 text-red-500 font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center space-x-2"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        <span>Withdraw from Course</span>
+                      </button>
+                    )}
+                  </>
                 )}
 
                 <div className="flex gap-2">

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Filter, X } from 'lucide-react';
+import { useUserEnrollments } from '../hooks/useUserEnrollments';
 import SearchBar from '../components/SearchBar';
 import CourseCard from '../components/CourseCard';
 import Tag from '../components/Tag';
@@ -11,10 +12,26 @@ const CoursesPage = () => {
   const [selectedLevel, setSelectedLevel] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [showFilters, setShowFilters] = useState(false);
+  const { enrollments } = useUserEnrollments();
 
   const levels = ['All Levels', 'Beginner', 'Intermediate', 'Advanced'];
 
-  const filteredCourses = sampleCourses.filter((course) => {
+  // Merge courses with enrollment data
+  const coursesWithEnrollment = useMemo(() => {
+    return sampleCourses.map(course => {
+      const enrollment = enrollments.find(e => e.courseId === course.id);
+      if (enrollment) {
+        return {
+          ...course,
+          progress: enrollment.progress,
+          isEnrolled: true
+        };
+      }
+      return course;
+    });
+  }, [enrollments]);
+
+  const filteredCourses = coursesWithEnrollment.filter((course) => {
     const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesLevel = !selectedLevel || selectedLevel === 'All Levels' || course.level === selectedLevel;

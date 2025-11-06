@@ -1,27 +1,66 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, BookOpen, Trophy, Clock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useUserEnrollments } from '../hooks/useUserEnrollments';
 import CourseCard from '../components/CourseCard';
 import ProgressBar from '../components/ProgressBar';
-import { sampleCourses, sampleMentors } from '../data/sampleData';
-import { useState } from 'react';
+import { sampleCourses } from '../data/sampleData';
+import { useMemo } from 'react';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const [, setSelectedMentor] = useState<any>(null);
+  const { enrollments, loading } = useUserEnrollments();
 
-  const continueLearning = sampleCourses.filter(c => c.progress && c.progress > 0);
-  const recommendedCourses = sampleCourses.filter(c => !c.progress || c.progress === 0).slice(0, 3);
+  // Merge real enrollments with course data
+  const enrolledCourses = useMemo(() => {
+    return sampleCourses
+      .map(course => {
+        const enrollment = enrollments.find(e => e.courseId === course.id);
+        if (enrollment) {
+          return {
+            ...course,
+            progress: enrollment.progress,
+            isEnrolled: true
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }, [enrollments]);
 
-  const weeklyProgress = userStats.weeklyGoal > 0 
-    ? Math.round((userStats.weeklyHoursCompleted / userStats.weeklyGoal) * 100) 
-    : 0;
+  // Recommended courses (not enrolled)
+  const recommendedCourses = useMemo(() => {
+    const enrolledIds = enrollments.map(e => e.courseId);
+    return sampleCourses
+      .filter(course => !enrolledIds.includes(course.id))
+      .slice(0, 3);
+  }, [enrollments]);
+
+  // Calculate real stats from enrollments
+  const totalEnrolled = enrollments.length;
+  const completedCourses = enrollments.filter(e => e.completed).length;
+  const totalHours = useMemo(() => {
+    return enrollments.reduce((sum, enrollment) => {
+      const course = sampleCourses.find(c => c.id === enrollment.courseId);
+      if (course && enrollment.progress > 0) {
+        return sum + Math.round((course.totalHours || 0) * (enrollment.progress / 100));
+      }
+      return sum;
+    }, 0);
+  }, [enrollments]);
+
+  // Calculate average progress
+  const averageProgress = useMemo(() => {
+    if (enrollments.length === 0) return 0;
+    const totalProgress = enrollments.reduce((sum, e) => sum + e.progress, 0);
+    return Math.round(totalProgress / enrollments.length);
+  }, [enrollments]);
 
   const stats = [
-    { icon: BookOpen, label: 'Courses Enrolled', value: userStats.coursesEnrolled.toString(), color: 'from-blue-500 to-cyan-500' },
-    { icon: Trophy, label: 'Certificates', value: userStats.certificates.toString(), color: 'from-yellow-500 to-orange-500' },
-    { icon: Clock, label: 'Hours Learned', value: userStats.hoursLearned.toString(), color: 'from-purple-500 to-pink-500' },
-    { icon: TrendingUp, label: 'Streak Days', value: userStats.streak.toString(), color: 'from-green-500 to-emerald-500' },
+    { icon: BookOpen, label: 'Courses Enrolled', value: totalEnrolled.toString(), color: 'from-blue-500 to-cyan-500' },
+    { icon: Trophy, label: 'Certificates', value: completedCourses.toString(), color: 'from-yellow-500 to-orange-500' },
+    { icon: Clock, label: 'Hours Learned', value: totalHours.toString(), color: 'from-purple-500 to-pink-500' },
+    { icon: TrendingUp, label: 'Active Courses', value: (totalEnrolled - completedCourses).toString(), color: 'from-green-500 to-emerald-500' },
   ];
 
   if (loading) {
@@ -57,12 +96,14 @@ const Dashboard = () => {
               
               <div className="max-w-md">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-white/90 text-sm">Weekly Goal Progress</span>
-                  <span className="text-white font-bold">{weeklyProgress}%</span>
+                  <span className="text-white/90 text-sm">Overall Progress</span>
+                  <span className="text-white font-bold">{averageProgress}%</span>
                 </div>
-                <ProgressBar progress={weeklyProgress} showLabel={false} />
+                <ProgressBar progress={averageProgress} showLabel={false} />
                 <p className="text-white/80 text-sm mt-2">
-                  {userStats.weeklyHoursCompleted} of {userStats.weeklyGoal} hours completed this week
+                  {enrollments.length > 0 
+                    ? `Average across ${enrollments.length} enrolled ${enrollments.length === 1 ? 'course' : 'courses'}`
+                    : 'Enroll in courses to start learning'}
                 </p>
               </div>
             </div>
@@ -105,11 +146,23 @@ const Dashboard = () => {
             </a>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {continueLearning.map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))}
-          </div>
+          {enrolledCourses.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {enrolledCourses.map((course: any) => (
+                <CourseCard key={course.id} course={course} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl">
+              <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                No Enrolled Courses Yet
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Start learning by enrolling in courses below
+              </p>
+            </div>
+          )}
         </motion.section>
 
         <motion.section

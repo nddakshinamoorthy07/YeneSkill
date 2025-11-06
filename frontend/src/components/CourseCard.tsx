@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
-import { Clock, Users, Star, Play, LogOut } from 'lucide-react';
+import { Clock, Users, Star, Play, LogOut, BookmarkPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { useWithdraw } from '../hooks/useWithdraw';
+import { useEnroll } from '../hooks/useEnroll';
+import { useEnrollmentStatus } from '../hooks/useEnrollmentStatus';
 import Tag from './Tag';
 import ProgressBar from './ProgressBar';
 
@@ -25,6 +27,20 @@ interface CourseCardProps {
 const CourseCard = ({ course, onWithdrawSuccess }: CourseCardProps) => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const { withdrawFromCourse, isWithdrawing } = useWithdraw();
+  const { enrollInCourse, isEnrolling } = useEnroll();
+  const { isEnrolled, progress, loading } = useEnrollmentStatus(course.id);
+
+  const handleEnroll = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const success = await enrollInCourse(course.id);
+    if (success) {
+      alert('Successfully enrolled in course!');
+      window.location.reload(); // Refresh to show updated state
+    } else {
+      alert('Failed to enroll. You may already be enrolled.');
+    }
+  };
 
   const handleWithdraw = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,6 +53,7 @@ const CourseCard = ({ course, onWithdrawSuccess }: CourseCardProps) => {
     if (success) {
       alert('You have been withdrawn from this course.');
       setShowWithdrawModal(false);
+      window.location.reload(); // Refresh to show updated state
       if (onWithdrawSuccess) {
         onWithdrawSuccess();
       }
@@ -90,9 +107,9 @@ const CourseCard = ({ course, onWithdrawSuccess }: CourseCardProps) => {
           ))}
         </div>
 
-        {course.progress !== undefined && course.progress > 0 && (
+        {isEnrolled && progress > 0 && (
           <div className="mb-4">
-            <ProgressBar progress={course.progress} />
+            <ProgressBar progress={progress} />
           </div>
         )}
 
@@ -113,15 +130,28 @@ const CourseCard = ({ course, onWithdrawSuccess }: CourseCardProps) => {
           </div>
         </div>
 
-        {course.progress !== undefined && course.progress > 0 && (
-          <button
-            onClick={handleWithdraw}
-            disabled={isWithdrawing}
-            className="w-full py-2 border-2 border-red-500 text-red-500 font-medium rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>{isWithdrawing ? 'Withdrawing...' : 'Withdraw'}</span>
-          </button>
+        {!loading && (
+          <>
+            {isEnrolled ? (
+              <button
+                onClick={handleWithdraw}
+                disabled={isWithdrawing}
+                className="w-full py-2 border-2 border-red-500 text-red-500 font-medium rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>{isWithdrawing ? 'Withdrawing...' : 'Withdraw'}</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleEnroll}
+                disabled={isEnrolling}
+                className="w-full py-2 bg-gradient-primary text-white font-medium rounded-lg hover:shadow-lg transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <BookmarkPlus className="w-4 h-4" />
+                <span>{isEnrolling ? 'Enrolling...' : 'Enroll Now'}</span>
+              </button>
+            )}
+          </>
         )}
       </div>
       </motion.div>
